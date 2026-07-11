@@ -8,38 +8,6 @@ window.TRUFIT_CLOUD = {
 (() => {
   'use strict';
 
-  const appUrl = 'https://vat120-wq.github.io/TruFit/';
-  const originalAppendChild = document.head.appendChild.bind(document.head);
-
-  document.head.appendChild = node => {
-    if (node?.tagName === 'SCRIPT' && String(node.src).includes('@supabase/supabase-js')) {
-      node.addEventListener('load', () => {
-        const originalCreateClient = window.supabase?.createClient;
-        if (!originalCreateClient || originalCreateClient.__trufitPatched) return;
-
-        const patchedCreateClient = (...args) => {
-          const client = originalCreateClient(...args);
-          const originalSignInWithOtp = client.auth.signInWithOtp.bind(client.auth);
-
-          client.auth.signInWithOtp = credentials => originalSignInWithOtp({
-            ...credentials,
-            options: {
-              ...(credentials?.options || {}),
-              emailRedirectTo: appUrl
-            }
-          });
-
-          return client;
-        };
-
-        patchedCreateClient.__trufitPatched = true;
-        window.supabase.createClient = patchedCreateClient;
-      }, { once: true });
-    }
-
-    return originalAppendChild(node);
-  };
-
   document.addEventListener('DOMContentLoaded', () => {
     const numericFields = [
       '#cloudCode',
