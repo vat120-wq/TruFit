@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f6f6f1">
-  <meta name="description" content="A calm, adaptive calorie, macro, weigh-in, and workout coach.">
-  <title>Stride — your daily health coach</title>
+  <meta name="description" content="TruFit is an adaptive calorie, macro, weigh-in, and high-performance workout coach.">
+  <title>TruFit — adaptive fitness coaching</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
@@ -34,8 +34,8 @@
 
   <div id="appShell" class="app-shell">
     <header class="topbar">
-      <a class="brand" href="#today" aria-label="Stride home">
-        <span class="brand-mark">S</span><span>stride</span>
+      <a class="brand" href="#today" aria-label="TruFit home">
+        <span class="brand-mark">TF</span><span>TRU<span class="brand-accent">FIT</span></span>
       </a>
       <button class="icon-button" id="settingsBtn" aria-label="Open profile and settings"><svg><use href="#i-settings"/></svg></button>
     </header>
@@ -50,7 +50,7 @@
         <article class="coach-card" id="coachCard">
           <div class="coach-label"><svg><use href="#i-spark"/></svg> DAILY COACH</div>
           <h2 id="coachTitle">Let’s build your plan.</h2>
-          <p id="coachMessage">A few details will help Stride make today simple and specific.</p>
+          <p id="coachMessage">A few details will help TruFit make today simple and specific.</p>
           <button class="text-button" id="coachAction">Get started <svg><use href="#i-chevron"/></svg></button>
         </article>
 
@@ -85,6 +85,7 @@
           <div><span class="chip" id="planLevel">FOUNDATION</span><h2 id="planName">3-day strength</h2><p id="planDescription">Simple full-body sessions that progress with you.</p></div>
           <div class="week-progress"><strong id="weekProgress">0/3</strong><span>this week</span></div>
         </article>
+        <article class="intensity-warning hidden" id="intensityWarning"><svg><use href="#i-info"/></svg><div><strong>HIGH-OUTPUT PROTOCOL</strong><p>Not for beginners, injuries, illness, or poor recovery. Stop for sharp pain, chest pain, faintness, or unusual shortness of breath. Keep at least one full rest day.</p></div></article>
         <div class="week-strip" id="weekStrip"></div>
         <section class="section-block">
           <div class="section-title"><div><p class="eyebrow" id="selectedDayLabel">TODAY</p><h2 id="selectedWorkoutName">Full body A</h2></div><span class="duration-label" id="selectedWorkoutDuration">35 min</span></div>
@@ -162,7 +163,7 @@
       <div class="modal-content">
         <p class="eyebrow">YOUR PLAN, MADE PERSONAL</p>
         <h1 id="onboardingTitle">Let’s make healthy feel simpler.</h1>
-        <p class="intro-copy">Stride turns your goal into daily calories, macros, workouts, and a short list of what to do next.</p>
+        <p class="intro-copy">TruFit turns your goal into daily calories, macros, workouts, and a short list of what to do next.</p>
         <form id="onboardingForm">
           <div class="form-step active" data-step="1">
             <label>What should we call you?<input required id="nameInput" name="name" autocomplete="given-name" placeholder="Your first name"></label>
@@ -182,13 +183,14 @@
           </div>
           <div class="form-step" data-step="3">
             <label>Training experience<select name="experience"><option value="beginner">New or returning</option><option value="intermediate">Consistent for 6+ months</option></select></label>
+            <label>Training protocol<select name="trainingMode"><option value="sustainable">Base Protocol · sustainable strength</option><option value="aggressive">Overdrive · 4 high-output days</option><option value="hybrid">Neon Hybrid · 5 strength + conditioning days</option></select></label>
             <label>Where will you train?<select name="equipment"><option value="gym">Gym access</option><option value="home">At home · minimal equipment</option></select></label>
             <label>Days per week<select name="trainingDays"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option></select></label>
             <div class="field-row">
               <label>Choose a 6-digit PIN<input required type="password" name="pin" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
               <label>Confirm PIN<input required type="password" name="pinConfirm" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
             </div>
-            <div class="safety-note"><svg><use href="#i-info"/></svg><p>Stride gives educational estimates, not medical care. If you’re pregnant, under 18, have an eating disorder history, or manage a medical condition, use a qualified clinician for your plan.</p></div>
+            <div class="safety-note"><svg><use href="#i-info"/></svg><p><strong>Aggressive protocols are for experienced, injury-free adults only.</strong> Start with Base if unsure. TruFit gives educational estimates, not medical care; medical conditions require a qualified clinician.</p></div>
           </div>
           <div class="step-dots"><i class="active"></i><i></i><i></i></div>
           <div class="modal-actions"><button type="button" class="back-button hidden" id="onboardingBack">Back</button><button type="button" class="primary-button" id="onboardingNext">Continue</button><button type="submit" class="primary-button hidden" id="onboardingFinish">Build my plan</button></div>
@@ -208,10 +210,10 @@
           <label>6-digit PIN<input required id="unlockPin" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
           <label class="hidden" id="pinConfirmLabel">Confirm PIN<input id="unlockPinConfirm" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
           <p class="pin-error hidden" id="pinError" role="alert"></p>
-          <button class="primary-button full" id="unlockBtn" type="submit">Unlock Stride</button>
+          <button class="primary-button full" id="unlockBtn" type="submit">Unlock TruFit</button>
         </form>
         <button class="danger-link" id="forgotPinBtn">Forgot PIN? Reset local data</button>
-        <p class="fine-print">Your PIN never leaves this device. There is no recovery method because Stride cannot read your encrypted data.</p>
+        <p class="fine-print">Your PIN never leaves this device. There is no recovery method because TruFit cannot read your encrypted data.</p>
       </div>
     </section>
   </div>
@@ -250,13 +252,15 @@
         <label>Name<input name="name" required></label>
         <div class="field-row"><label>Goal weight<div class="suffix-input"><input name="goalWeight" type="number" step="0.1" min="80" max="700"><span>lb</span></div></label><label>Weekly pace<select name="pace"><option value="0.5">0.5 lb/week</option><option value="1">1 lb/week</option><option value="1.5">1.5 lb/week</option></select></label></div>
         <label>Daily calorie target<div class="suffix-input"><input name="calorieTarget" type="number" min="1200" max="6000"><span>kcal</span></div></label>
-        <div class="field-row"><label>Training days<select name="trainingDays"><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option></select></label><label>Equipment<select name="equipment"><option value="gym">Gym</option><option value="home">At home</option></select></label></div>
+        <label>Training protocol<select name="trainingMode"><option value="sustainable">Base Protocol</option><option value="aggressive">Overdrive · 4 days</option><option value="hybrid">Neon Hybrid · 5 days</option></select></label>
+        <div class="field-row"><label>Base training days<select name="trainingDays"><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option></select></label><label>Equipment<select name="equipment"><option value="gym">Gym</option><option value="home">At home</option></select></label></div>
+        <div class="safety-note"><svg><use href="#i-info"/></svg><p>Overdrive and Neon Hybrid override base days. Use them only after 6+ months of consistent training and with reliable sleep and recovery.</p></div>
         <label class="toggle-row"><span><b>Daily coaching</b><small>Show adaptive next steps</small></span><input type="checkbox" name="coaching" checked></label>
         <button class="primary-button full" type="submit">Save changes</button>
       </form>
-      <button class="outline-button full" id="lockAppBtn">Lock Stride now</button>
+      <button class="outline-button full" id="lockAppBtn">Lock TruFit now</button>
       <button class="danger-link" id="resetDataBtn">Reset all data</button>
-      <p class="fine-print">Stride stores your health data only in this browser. It is educational and does not diagnose or treat medical conditions.</p>
+      <p class="fine-print">TruFit stores your encrypted health data only in this browser. It is educational and does not diagnose or treat medical conditions.</p>
     </section>
   </div>
 
