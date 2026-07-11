@@ -23,7 +23,7 @@ Open `http://localhost:8080`.
 
 ## Deploy
 
-The included GitHub Actions workflow publishes the repository root when `main` is updated. In the repository settings, set **Pages → Source** to **GitHub Actions** if it is not selected automatically.
+GitHub Pages publishes the repository root directly from `main`. Updates pushed to that branch are deployed automatically without a build step.
 
 ## Privacy and safety
 
