@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#050812">
   <meta name="description" content="TruFit is an adaptive calorie, macro, weigh-in, and high-performance workout coach.">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TruFit">
   <title>TruFit — adaptive fitness coaching</title>
@@ -178,6 +179,7 @@
         <p class="eyebrow">YOUR PLAN, MADE PERSONAL</p>
         <h1 id="onboardingTitle">Let’s make healthy feel simpler.</h1>
         <p class="intro-copy">TruFit turns your goal into daily calories, macros, workouts, and a short list of what to do next.</p>
+        <button class="cloud-restore-button cloud-only hidden" id="restoreCloudBtn" type="button"><svg><use href="#i-spark"/></svg><span><strong>Already use TruFit?</strong><small>Restore your encrypted plan with email + PIN</small></span></button>
         <form id="onboardingForm">
           <div class="form-step active" data-step="1">
             <label>What should we call you?<input required id="nameInput" name="name" autocomplete="given-name" placeholder="Your first name"></label>
@@ -273,12 +275,37 @@
         <button class="primary-button full" type="submit">Save changes</button>
       </form>
       <button class="outline-button full" id="lockAppBtn">Lock TruFit now</button>
+      <article class="cloud-sync-card cloud-only hidden" id="cloudSyncCard">
+        <div class="round-icon"><svg><use href="#i-spark"/></svg></div>
+        <div><strong>Encrypted cloud sync</strong><small id="cloudSyncStatus">Not connected</small></div>
+        <button class="small-button" id="cloudConnectBtn" type="button">Connect</button>
+        <button class="small-button hidden" id="cloudSyncNowBtn" type="button">Sync now</button>
+      </article>
+      <button class="danger-link cloud-only hidden" id="cloudSignOutBtn" type="button">Disconnect cloud account</button>
       <button class="danger-link" id="resetDataBtn">Reset all data</button>
       <p class="fine-print">TruFit stores your encrypted health data only in this browser. It is educational and does not diagnose or treat medical conditions.</p>
     </section>
   </div>
 
+  <div class="sheet-overlay" id="cloudSheet" aria-hidden="true">
+    <section class="bottom-sheet compact-sheet cloud-sheet" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
+      <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">ZERO-KNOWLEDGE SYNC</p><h2 id="cloudTitle">Connect your email</h2></div><button class="icon-button" data-close-sheet><svg><use href="#i-close"/></svg></button></div>
+      <p class="helper-copy">Email identifies your private cloud record. Your PIN encrypts and decrypts it; TruFit uploads only ciphertext.</p>
+      <form id="cloudEmailForm">
+        <label>Email address<input required id="cloudEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></label>
+        <button class="primary-button full" type="submit">Send one-time code</button>
+      </form>
+      <form class="hidden" id="cloudCodeForm">
+        <label>Code from email<input required id="cloudCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" maxlength="8" placeholder="000000"></label>
+        <button class="primary-button full" type="submit">Verify and sync</button>
+        <button class="link-button centered" id="cloudUseDifferentEmail" type="button">Use a different email</button>
+      </form>
+      <p class="pin-error hidden" id="cloudError" role="alert"></p>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="cloud-config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
