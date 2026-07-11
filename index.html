@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f6f1">
+  <meta name="description" content="A calm, adaptive calorie, macro, weigh-in, and workout coach.">
+  <title>Stride — your daily health coach</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10M9.5 19.5v-6h5v6"/></symbol>
+    <symbol id="i-plan" viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/><path d="m8 13 2 2 5-5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M7 15l4-4 3 2 5-6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M13.2 2.5c.5 3-1.8 4.1-2.8 6.2-.7 1.5-.1 2.6.8 3.4-.1-2.2 1.3-3.4 2.6-4.3.2 2.1 2.2 3.1 2.8 5.1.8 2.6-.7 6-4.6 6.6-3.5.5-6.7-2-6.7-5.8 0-3.5 2.6-5.4 4.8-7.2.1 2 .8 2.7 1.4 3.2.1-2.7 2.4-3.9 1.7-7.2Z"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9a4 4 0 0 1 8 0M12 9l2-2"/></symbol>
+    <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6 8v8M3.5 9.5v5M18 8v8M20.5 9.5v5M6 12h12M1.5 11v2M22.5 11v2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5L12 2ZM19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"/></symbol>
+    <symbol id="i-water" viewBox="0 0 24 24"><path d="M12 2S5.5 9 5.5 14.5a6.5 6.5 0 0 0 13 0C18.5 9 12 2 12 2Z"/><path d="M9 16.5a3.5 3.5 0 0 0 3 1.5"/></symbol>
+    <symbol id="i-food" viewBox="0 0 24 24"><path d="M7 3v7M4 3v4a3 3 0 0 0 6 0V3M7 10v11M16 3c-2 3-2 7 0 9h3V3h-3ZM18 12v9"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.2"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m14 5 5 5M4 20l3.5-.8L19 7.7a2 2 0 0 0-2.7-2.7L4.8 16.5 4 20Z"/></symbol>
+  </svg>
+
+  <div id="appShell" class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#today" aria-label="Stride home">
+        <span class="brand-mark">S</span><span>stride</span>
+      </a>
+      <button class="icon-button" id="settingsBtn" aria-label="Open profile and settings"><svg><use href="#i-settings"/></svg></button>
+    </header>
+
+    <main id="mainContent" tabindex="-1">
+      <section class="view active" id="todayView" data-view="today">
+        <div class="page-head">
+          <div><p class="eyebrow" id="dateLabel">TODAY</p><h1 id="greeting">Good morning</h1></div>
+          <div class="streak-pill"><svg><use href="#i-flame"/></svg><span id="streakCount">0</span></div>
+        </div>
+
+        <article class="coach-card" id="coachCard">
+          <div class="coach-label"><svg><use href="#i-spark"/></svg> DAILY COACH</div>
+          <h2 id="coachTitle">Let’s build your plan.</h2>
+          <p id="coachMessage">A few details will help Stride make today simple and specific.</p>
+          <button class="text-button" id="coachAction">Get started <svg><use href="#i-chevron"/></svg></button>
+        </article>
+
+        <section class="section-block">
+          <div class="section-title"><div><p class="eyebrow">YOUR FUEL</p><h2>Calories & macros</h2></div><button class="link-button" data-open-log="food">Log food</button></div>
+          <article class="card nutrition-card">
+            <div class="calorie-ring" id="calorieRing" style="--progress:0deg">
+              <div class="ring-center"><strong id="calRemaining">—</strong><span>kcal left</span></div>
+            </div>
+            <div class="macro-summary">
+              <div class="macro-row"><span>Protein</span><strong><span id="proteinNow">0</span> / <span id="proteinGoal">—</span>g</strong><div class="mini-track"><i id="proteinBar"></i></div></div>
+              <div class="macro-row"><span>Carbs</span><strong><span id="carbsNow">0</span> / <span id="carbsGoal">—</span>g</strong><div class="mini-track"><i id="carbsBar"></i></div></div>
+              <div class="macro-row"><span>Fats</span><strong><span id="fatNow">0</span> / <span id="fatGoal">—</span>g</strong><div class="mini-track"><i id="fatBar"></i></div></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="section-block">
+          <div class="section-title"><div><p class="eyebrow">TODAY'S MOVEMENT</p><h2 id="workoutHeading">Your workout</h2></div><button class="link-button" data-nav="plan">View plan</button></div>
+          <article class="card workout-preview" id="workoutPreview"></article>
+        </section>
+
+        <section class="section-block">
+          <div class="section-title"><div><p class="eyebrow">KEEP THE PROMISE</p><h2>Today’s checklist</h2></div><span class="muted-count" id="taskCount">0 of 4</span></div>
+          <article class="card task-list" id="taskList"></article>
+        </section>
+      </section>
+
+      <section class="view" id="planView" data-view="plan">
+        <div class="page-head"><div><p class="eyebrow">YOUR ROUTINE</p><h1>Weekly plan</h1></div></div>
+        <article class="plan-hero">
+          <div><span class="chip" id="planLevel">FOUNDATION</span><h2 id="planName">3-day strength</h2><p id="planDescription">Simple full-body sessions that progress with you.</p></div>
+          <div class="week-progress"><strong id="weekProgress">0/3</strong><span>this week</span></div>
+        </article>
+        <div class="week-strip" id="weekStrip"></div>
+        <section class="section-block">
+          <div class="section-title"><div><p class="eyebrow" id="selectedDayLabel">TODAY</p><h2 id="selectedWorkoutName">Full body A</h2></div><span class="duration-label" id="selectedWorkoutDuration">35 min</span></div>
+          <div id="exerciseList" class="exercise-list"></div>
+          <button class="primary-button full" id="workoutCompleteBtn"><svg><use href="#i-check"/></svg> Complete workout</button>
+        </section>
+        <section class="section-block">
+          <article class="card progression-card">
+            <div class="round-icon"><svg><use href="#i-chart"/></svg></div>
+            <div><h3>How to progress</h3><p>When every set feels like you could do 3 more reps, add 2–5 lb next time. Keep 1–3 good reps in reserve.</p></div>
+          </article>
+        </section>
+      </section>
+
+      <section class="view" id="logView" data-view="log">
+        <div class="page-head"><div><p class="eyebrow">CAPTURE THE DAY</p><h1>Log</h1></div></div>
+        <div class="log-tabs" role="tablist">
+          <button class="active" data-log-tab="food" role="tab">Food</button>
+          <button data-log-tab="weight" role="tab">Weight</button>
+        </div>
+        <div class="log-panel active" id="foodPanel">
+          <article class="daily-total-card">
+            <div><span>Today</span><strong><span id="logCalories">0</span> kcal</strong></div>
+            <div class="daily-total-macros"><span><i class="dot protein"></i><b id="logProtein">0g</b> protein</span><span><i class="dot carbs"></i><b id="logCarbs">0g</b> carbs</span><span><i class="dot fat"></i><b id="logFat">0g</b> fat</span></div>
+          </article>
+          <div class="meal-list" id="mealList"></div>
+          <button class="outline-button full" id="addFoodBtn"><svg><use href="#i-plus"/></svg> Add food</button>
+        </div>
+        <div class="log-panel" id="weightPanel">
+          <article class="card weigh-card">
+            <div class="round-icon warm"><svg><use href="#i-scale"/></svg></div>
+            <div><p class="eyebrow">LATEST WEIGHT</p><h2><span id="latestWeight">—</span> <small>lb</small></h2><p id="weightChangeText">Log a weigh-in to begin your trend.</p></div>
+            <button class="small-button" id="addWeightBtn">Weigh in</button>
+          </article>
+          <div class="section-title"><div><p class="eyebrow">RECENT</p><h2>Weight history</h2></div></div>
+          <div class="weight-history" id="weightHistory"></div>
+        </div>
+      </section>
+
+      <section class="view" id="progressView" data-view="progress">
+        <div class="page-head"><div><p class="eyebrow">THE BIG PICTURE</p><h1>Progress</h1></div></div>
+        <div class="range-switch" id="rangeSwitch"><button data-range="14">2W</button><button class="active" data-range="30">1M</button><button data-range="90">3M</button><button data-range="all">ALL</button></div>
+        <article class="card chart-card">
+          <div class="chart-head"><div><span>Weight trend</span><h2><span id="trendWeight">—</span> <small>lb</small></h2></div><div class="trend-badge" id="trendBadge">Need more data</div></div>
+          <div class="chart-wrap"><svg id="weightChart" viewBox="0 0 600 240" role="img" aria-label="Weight trend chart"></svg></div>
+          <div class="chart-axis"><span id="chartStart">—</span><span id="chartEnd">—</span></div>
+        </article>
+        <div class="stat-grid">
+          <article class="stat-card"><span>Change</span><strong id="totalChange">—</strong><small>since start</small></article>
+          <article class="stat-card"><span>Consistency</span><strong id="consistency">0%</strong><small>last 14 days</small></article>
+          <article class="stat-card"><span>Workouts</span><strong id="workoutStat">0</strong><small>this month</small></article>
+          <article class="stat-card"><span>Goal</span><strong id="goalDistance">—</strong><small>remaining</small></article>
+        </div>
+        <article class="coach-card compact" id="checkinCard">
+          <div class="coach-label"><svg><use href="#i-spark"/></svg> WEEKLY CHECK-IN</div>
+          <h2 id="checkinTitle">Keep collecting data</h2>
+          <p id="checkinMessage">Your recommendation will appear after enough consistent weigh-ins.</p>
+          <button class="text-button hidden" id="applyAdjustmentBtn">Apply recommendation <svg><use href="#i-chevron"/></svg></button>
+        </article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Primary navigation">
+      <button class="active" data-nav="today"><svg><use href="#i-home"/></svg><span>Today</span></button>
+      <button data-nav="plan"><svg><use href="#i-plan"/></svg><span>Plan</span></button>
+      <button class="log-fab" data-nav="log"><span><svg><use href="#i-plus"/></svg></span><em>Log</em></button>
+      <button data-nav="progress"><svg><use href="#i-chart"/></svg><span>Progress</span></button>
+      <button data-open-settings><svg><use href="#i-user"/></svg><span>You</span></button>
+    </nav>
+  </div>
+
+  <div class="modal-overlay" id="onboardingModal" aria-hidden="true">
+    <section class="modal onboarding-modal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+      <div class="onboarding-art"><span class="brand-mark large">S</span><span class="art-ring ring-one"></span><span class="art-ring ring-two"></span></div>
+      <div class="modal-content">
+        <p class="eyebrow">YOUR PLAN, MADE PERSONAL</p>
+        <h1 id="onboardingTitle">Let’s make healthy feel simpler.</h1>
+        <p class="intro-copy">Stride turns your goal into daily calories, macros, workouts, and a short list of what to do next.</p>
+        <form id="onboardingForm">
+          <div class="form-step active" data-step="1">
+            <label>What should we call you?<input required id="nameInput" name="name" autocomplete="given-name" placeholder="Your first name"></label>
+            <div class="field-row">
+              <label>Age<input required type="number" name="age" min="18" max="100" value="30" inputmode="numeric"></label>
+              <label>Sex used for estimate<select name="sex"><option value="female">Female</option><option value="male">Male</option></select></label>
+            </div>
+            <label>Height<div class="unit-inputs"><input required type="number" name="heightFt" min="4" max="7" value="5" inputmode="numeric"><span>ft</span><input required type="number" name="heightIn" min="0" max="11" value="6" inputmode="numeric"><span>in</span></div></label>
+          </div>
+          <div class="form-step" data-step="2">
+            <div class="field-row">
+              <label>Current weight<div class="suffix-input"><input required type="number" step="0.1" name="currentWeight" min="80" max="700" value="190" inputmode="decimal"><span>lb</span></div></label>
+              <label>Goal weight<div class="suffix-input"><input required type="number" step="0.1" name="goalWeight" min="80" max="700" value="165" inputmode="decimal"><span>lb</span></div></label>
+            </div>
+            <label>Typical daily activity<select name="activity"><option value="1.2">Mostly seated</option><option value="1.375">Lightly active</option><option value="1.55" selected>Moderately active</option><option value="1.725">Very active</option></select></label>
+            <label>Preferred pace<select name="pace"><option value="0.5">Gentle · 0.5 lb/week</option><option value="1" selected>Steady · 1 lb/week</option><option value="1.5">Focused · 1.5 lb/week</option></select></label>
+          </div>
+          <div class="form-step" data-step="3">
+            <label>Training experience<select name="experience"><option value="beginner">New or returning</option><option value="intermediate">Consistent for 6+ months</option></select></label>
+            <label>Where will you train?<select name="equipment"><option value="gym">Gym access</option><option value="home">At home · minimal equipment</option></select></label>
+            <label>Days per week<select name="trainingDays"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option></select></label>
+            <div class="safety-note"><svg><use href="#i-info"/></svg><p>Stride gives educational estimates, not medical care. If you’re pregnant, under 18, have an eating disorder history, or manage a medical condition, use a qualified clinician for your plan.</p></div>
+          </div>
+          <div class="step-dots"><i class="active"></i><i></i><i></i></div>
+          <div class="modal-actions"><button type="button" class="back-button hidden" id="onboardingBack">Back</button><button type="button" class="primary-button" id="onboardingNext">Continue</button><button type="submit" class="primary-button hidden" id="onboardingFinish">Build my plan</button></div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <div class="sheet-overlay" id="foodSheet" aria-hidden="true">
+    <section class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="foodSheetTitle">
+      <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">NOURISH</p><h2 id="foodSheetTitle">Add food</h2></div><button class="icon-button" data-close-sheet><svg><use href="#i-close"/></svg></button></div>
+      <div class="search-field"><svg><use href="#i-food"/></svg><input id="foodSearch" placeholder="Search common foods" autocomplete="off"></div>
+      <div class="food-results" id="foodResults"></div>
+      <button class="link-button centered" id="customFoodBtn">+ Add a custom food</button>
+      <form class="custom-food-form hidden" id="customFoodForm">
+        <label>Food name<input required name="foodName" placeholder="e.g. Turkey sandwich"></label>
+        <div class="field-row four"><label>Calories<input required type="number" name="calories" min="0" inputmode="numeric"></label><label>Protein<input required type="number" name="protein" min="0" inputmode="numeric"></label><label>Carbs<input required type="number" name="carbs" min="0" inputmode="numeric"></label><label>Fat<input required type="number" name="fat" min="0" inputmode="numeric"></label></div>
+        <label>Meal<select name="meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snacks</option></select></label>
+        <button class="primary-button full" type="submit">Add to today</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="sheet-overlay" id="weightSheet" aria-hidden="true">
+    <section class="bottom-sheet compact-sheet" role="dialog" aria-modal="true" aria-labelledby="weightSheetTitle">
+      <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">TREND, DON'T JUDGE</p><h2 id="weightSheetTitle">Log weigh-in</h2></div><button class="icon-button" data-close-sheet><svg><use href="#i-close"/></svg></button></div>
+      <form id="weightForm">
+        <label>Weight<div class="big-weight-input"><input required id="weightInput" type="number" step="0.1" min="70" max="700" inputmode="decimal"><span>lb</span></div></label>
+        <label>Date<input required id="weightDate" type="date"></label>
+        <p class="helper-copy">For a useful trend, weigh under similar conditions—ideally in the morning after using the bathroom.</p>
+        <button class="primary-button full" type="submit">Save weigh-in</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="sheet-overlay" id="settingsSheet" aria-hidden="true">
+    <section class="bottom-sheet settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">YOUR PLAN</p><h2 id="settingsTitle">Profile & settings</h2></div><button class="icon-button" data-close-sheet><svg><use href="#i-close"/></svg></button></div>
+      <form id="settingsForm">
+        <label>Name<input name="name" required></label>
+        <div class="field-row"><label>Goal weight<div class="suffix-input"><input name="goalWeight" type="number" step="0.1" min="80" max="700"><span>lb</span></div></label><label>Weekly pace<select name="pace"><option value="0.5">0.5 lb/week</option><option value="1">1 lb/week</option><option value="1.5">1.5 lb/week</option></select></label></div>
+        <label>Daily calorie target<div class="suffix-input"><input name="calorieTarget" type="number" min="1200" max="6000"><span>kcal</span></div></label>
+        <div class="field-row"><label>Training days<select name="trainingDays"><option value="2">2 days</option><option value="3">3 days</option><option value="4">4 days</option></select></label><label>Equipment<select name="equipment"><option value="gym">Gym</option><option value="home">At home</option></select></label></div>
+        <label class="toggle-row"><span><b>Daily coaching</b><small>Show adaptive next steps</small></span><input type="checkbox" name="coaching" checked></label>
+        <button class="primary-button full" type="submit">Save changes</button>
+      </form>
+      <button class="danger-link" id="resetDataBtn">Reset all data</button>
+      <p class="fine-print">Stride stores your health data only in this browser. It is educational and does not diagnose or treat medical conditions.</p>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

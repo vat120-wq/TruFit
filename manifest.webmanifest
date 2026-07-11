@@ -1,0 +1,10 @@
+{
+  "name": "Stride — Daily Health Coach",
+  "short_name": "Stride",
+  "description": "Adaptive calories, macros, weigh-ins, and structured workouts.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f6f1",
+  "theme_color": "#153f32",
+  "icons": [{"src":"icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
