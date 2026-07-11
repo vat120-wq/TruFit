@@ -184,11 +184,34 @@
             <label>Training experience<select name="experience"><option value="beginner">New or returning</option><option value="intermediate">Consistent for 6+ months</option></select></label>
             <label>Where will you train?<select name="equipment"><option value="gym">Gym access</option><option value="home">At home · minimal equipment</option></select></label>
             <label>Days per week<select name="trainingDays"><option value="2">2 days</option><option value="3" selected>3 days</option><option value="4">4 days</option></select></label>
+            <div class="field-row">
+              <label>Choose a 6-digit PIN<input required type="password" name="pin" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
+              <label>Confirm PIN<input required type="password" name="pinConfirm" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
+            </div>
             <div class="safety-note"><svg><use href="#i-info"/></svg><p>Stride gives educational estimates, not medical care. If you’re pregnant, under 18, have an eating disorder history, or manage a medical condition, use a qualified clinician for your plan.</p></div>
           </div>
           <div class="step-dots"><i class="active"></i><i></i><i></i></div>
           <div class="modal-actions"><button type="button" class="back-button hidden" id="onboardingBack">Back</button><button type="button" class="primary-button" id="onboardingNext">Continue</button><button type="submit" class="primary-button hidden" id="onboardingFinish">Build my plan</button></div>
         </form>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-overlay pin-overlay" id="pinModal" aria-hidden="true">
+    <section class="modal pin-modal" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+      <div class="pin-mark"><span class="brand-mark large">S</span></div>
+      <div class="modal-content">
+        <p class="eyebrow">PRIVATE BY DEFAULT</p>
+        <h1 id="pinTitle">Welcome back.</h1>
+        <p class="intro-copy" id="pinCopy">Enter your PIN to decrypt your plan and health data on this device.</p>
+        <form id="pinForm" data-mode="unlock">
+          <label>6-digit PIN<input required id="unlockPin" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
+          <label class="hidden" id="pinConfirmLabel">Confirm PIN<input id="unlockPinConfirm" type="password" inputmode="numeric" autocomplete="new-password" pattern="[0-9]{6}" maxlength="6" placeholder="••••••"></label>
+          <p class="pin-error hidden" id="pinError" role="alert"></p>
+          <button class="primary-button full" id="unlockBtn" type="submit">Unlock Stride</button>
+        </form>
+        <button class="danger-link" id="forgotPinBtn">Forgot PIN? Reset local data</button>
+        <p class="fine-print">Your PIN never leaves this device. There is no recovery method because Stride cannot read your encrypted data.</p>
       </div>
     </section>
   </div>
@@ -231,6 +254,7 @@
         <label class="toggle-row"><span><b>Daily coaching</b><small>Show adaptive next steps</small></span><input type="checkbox" name="coaching" checked></label>
         <button class="primary-button full" type="submit">Save changes</button>
       </form>
+      <button class="outline-button full" id="lockAppBtn">Lock Stride now</button>
       <button class="danger-link" id="resetDataBtn">Reset all data</button>
       <p class="fine-print">Stride stores your health data only in this browser. It is educational and does not diagnose or treat medical conditions.</p>
     </section>

@@ -22,3 +22,4 @@
 .field-row.four{grid-template-columns:repeat(4,minmax(0,1fr))}
 .unit-inputs{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto}
 .modal-content>h1{overflow-wrap:break-word}
+.pin-overlay{align-items:center;padding:20px}.pin-modal{max-width:430px;border-radius:28px;box-shadow:var(--shadow)}.pin-mark{display:grid;place-items:center;padding:30px 0 5px}.pin-modal .modal-content{text-align:center}.pin-modal .modal-content label{text-align:left;display:block;font-size:11px;font-weight:700;color:#56615b;margin-bottom:15px}.pin-modal input{text-align:center;font-size:25px;letter-spacing:9px}.pin-error{background:var(--orange-light);color:#8b4e32;border-radius:12px;padding:10px;font-size:11px}.settings-sheet #lockAppBtn{margin-top:12px}
