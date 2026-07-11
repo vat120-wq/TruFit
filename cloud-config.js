@@ -8,7 +8,7 @@ window.TRUFIT_CLOUD = {
 (() => {
   'use strict';
 
-  const appUrl = `${window.location.origin}${window.location.pathname}`;
+  const appUrl = 'https://vat120-wq.github.io/TruFit/';
   const originalAppendChild = document.head.appendChild.bind(document.head);
 
   document.head.appendChild = node => {
