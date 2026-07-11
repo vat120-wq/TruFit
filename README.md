@@ -9,6 +9,7 @@ TruFit is a mobile-first, privacy-friendly calorie, macro, weigh-in, and workout
 - Meal logging with common foods and custom entries
 - Weigh-in history, trend charts, and small evidence-gated weekly adjustments
 - Progressive 2-, 3-, or 4-day base programs plus warned 4-day Overdrive and 5-day Neon Hybrid protocols
+- Deload, Standard, and Push session output with exercise-specific load, rep, effort, and conditioning progression
 - Local-only personal data and offline support after the first visit
 
 ## Run locally

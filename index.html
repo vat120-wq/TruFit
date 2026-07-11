@@ -89,7 +89,15 @@
         <div class="week-strip" id="weekStrip"></div>
         <section class="section-block">
           <div class="section-title"><div><p class="eyebrow" id="selectedDayLabel">TODAY</p><h2 id="selectedWorkoutName">Full body A</h2></div><span class="duration-label" id="selectedWorkoutDuration">35 min</span></div>
+          <article class="output-console" id="outputConsole">
+            <div class="output-head"><div><span class="console-dot"></span><strong>SESSION OUTPUT</strong></div><span id="outputValue">STANDARD</span></div>
+            <div class="output-switch" role="group" aria-label="Session intensity">
+              <button data-output="deload">Deload</button><button class="active" data-output="standard">Standard</button><button data-output="push">Push</button>
+            </div>
+            <p id="outputGuidance">Planned volume and load. Finish most working sets with 1–3 reps in reserve.</p>
+          </article>
           <div id="exerciseList" class="exercise-list"></div>
+          <button class="outline-button full recalculate-button" id="recalculateWorkoutBtn"><svg><use href="#i-spark"/></svg> Recalculate next targets</button>
           <button class="primary-button full" id="workoutCompleteBtn"><svg><use href="#i-check"/></svg> Complete workout</button>
         </section>
         <section class="section-block">
