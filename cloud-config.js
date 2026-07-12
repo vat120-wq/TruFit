@@ -8,116 +8,24 @@ window.TRUFIT_CLOUD = {
 (() => {
   'use strict';
 
-  let supabaseValue;
+  const style = document.createElement('style');
+  style.textContent = `
+    .meal-builder{margin:14px 0 18px;padding:15px;border:1px solid var(--line);border-radius:18px;background:#0a1220}
+    .builder-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.builder-head h3{margin:4px 0 0;font-size:18px}.builder-head>button{border:0;background:transparent;color:var(--orange)}
+    .ingredient-results{display:grid;gap:7px;max-height:260px;overflow:auto;margin:8px 0 14px}.ingredient-results button{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:11px;border:1px solid var(--line);border-radius:12px;background:#0c1423;color:var(--ink);text-align:left}.ingredient-results span:first-child{display:flex;flex-direction:column;gap:3px}.ingredient-results small,.meal-ingredient-row small,.saved-meal-card small{color:var(--muted);font-size:10px}
+    .meal-ingredient-row,.saved-meal-card{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--line)}.meal-ingredient-row>div,.saved-meal-card>div:first-child{display:flex;flex-direction:column;gap:3px}.meal-ingredient-row input{width:72px;min-height:42px}.meal-ingredient-row button,.saved-meal-card button{border:0;background:#142238;color:var(--ink);border-radius:9px;padding:8px 10px}
+    .meal-totals{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0}.meal-totals div{padding:10px 5px;border:1px solid var(--line);border-radius:12px;background:#0c1423;text-align:center}.meal-totals strong{display:block;font-size:16px;color:var(--green)}.meal-totals span{font-size:8px;color:var(--muted);text-transform:uppercase}
+    .builder-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.saved-meals{margin-top:18px;padding-top:15px;border-top:1px solid var(--line)}.saved-meal-card{grid-template-columns:minmax(0,1fr) auto}.saved-meal-card>div:last-child{display:flex;gap:5px}.builder-empty{color:var(--muted);font-size:11px;text-align:center;padding:12px}
+    .meal-builder details{margin:10px 0 14px;padding:11px;border:1px solid var(--line);border-radius:12px}.meal-builder summary{cursor:pointer;font-size:12px;font-weight:700}.meal-builder textarea{width:100%;font:inherit}
+    @media(max-width:420px){.meal-totals{grid-template-columns:repeat(2,1fr)}.builder-actions{grid-template-columns:1fr}.saved-meal-card{grid-template-columns:1fr}.saved-meal-card>div:last-child{justify-content:flex-start}}
+  `;
+  document.head.appendChild(style);
 
-  const wrapSupabase = value => {
-    if (!value?.createClient || value.createClient.__trufitWrapped) return value;
-
-    const originalCreateClient = value.createClient.bind(value);
-    const wrappedCreateClient = (...args) => {
-      const client = originalCreateClient(...args);
-      window.TRUFIT_AUTH_CLIENT = client;
-      return client;
-    };
-
-    wrappedCreateClient.__trufitWrapped = true;
-    value.createClient = wrappedCreateClient;
-    return value;
-  };
-
-  Object.defineProperty(window, 'supabase', {
-    configurable: true,
-    get() {
-      return supabaseValue;
-    },
-    set(value) {
-      supabaseValue = wrapSupabase(value);
-    }
-  });
-
-  const showAuthError = message => {
-    const error = document.querySelector('#cloudError');
-    if (!error) return;
-    error.textContent = message;
-    error.classList.remove('hidden');
-  };
-
-  window.addEventListener('load', () => {
-    const form = document.querySelector('#cloudEmailForm');
-    const codeForm = document.querySelector('#cloudCodeForm');
-    const title = document.querySelector('#cloudTitle');
-    const helper = document.querySelector('#cloudSheet .helper-copy');
-    if (!form || !codeForm) return;
-
-    if (title) title.textContent = 'Cloud account';
-    if (helper) helper.textContent = 'Sign in or create an account to sync your encrypted TruFit data. Your PIN still protects the contents of your backup.';
-
-    form.innerHTML = `
-      <label>Email address<input required id="cloudEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></label>
-      <label>Password<input required id="cloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters"></label>
-      <button class="primary-button full" type="submit" data-auth-action="signin">Sign in and sync</button>
-      <button class="outline-button full" type="submit" data-auth-action="signup">Create account</button>
-    `;
-    codeForm.classList.add('hidden');
-
-    form.addEventListener('submit', async event => {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-
-      const client = window.TRUFIT_AUTH_CLIENT;
-      const email = document.querySelector('#cloudEmail')?.value.trim();
-      const password = document.querySelector('#cloudPassword')?.value || '';
-      const action = event.submitter?.dataset.authAction || 'signin';
-      const button = event.submitter;
-      const error = document.querySelector('#cloudError');
-
-      if (!client) return showAuthError('Cloud sync is still loading. Try again in a moment.');
-      if (password.length < 8) return showAuthError('Password must be at least 8 characters.');
-
-      if (error) error.classList.add('hidden');
-      if (button) {
-        button.disabled = true;
-        button.textContent = action === 'signup' ? 'Creating account…' : 'Signing in…';
-      }
-
-      try {
-        const result = action === 'signup'
-          ? await client.auth.signUp({ email, password })
-          : await client.auth.signInWithPassword({ email, password });
-
-        if (result.error) throw result.error;
-        if (action === 'signup' && !result.data.session) {
-          throw new Error('Account created, but Supabase still requires email confirmation. Turn off Confirm email in Authentication settings, then sign in.');
-        }
-
-        document.querySelector('#cloudSheet')?.classList.remove('open');
-        document.querySelector('#cloudSheet')?.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-      } catch (err) {
-        showAuthError(err.message || 'Could not connect your cloud account.');
-      } finally {
-        if (button) {
-          button.disabled = false;
-          button.textContent = action === 'signup' ? 'Create account' : 'Sign in and sync';
-        }
-      }
-    }, true);
-
-    const numericFields = [
-      '#unlockPin',
-      '#unlockPinConfirm',
-      'input[name="pin"]',
-      'input[name="pinConfirm"]'
-    ];
-
+  document.addEventListener('DOMContentLoaded', () => {
+    const numericFields = ['#unlockPin','#unlockPinConfirm','input[name="pin"]','input[name="pinConfirm"]'];
     document.querySelectorAll(numericFields.join(',')).forEach(input => {
-      const sanitize = () => {
-        input.value = input.value.replace(/\D/g, '').slice(0, Number(input.maxLength) || undefined);
-      };
-
-      input.addEventListener('beforeinput', event => {
-        if (event.data && /\D/.test(event.data)) event.preventDefault();
-      });
+      const sanitize = () => { input.value = input.value.replace(/\D/g, '').slice(0, Number(input.maxLength) || undefined); };
+      input.addEventListener('beforeinput', event => { if (event.data && /\D/.test(event.data)) event.preventDefault(); });
       input.addEventListener('input', sanitize);
       input.addEventListener('paste', event => {
         event.preventDefault();
@@ -129,5 +37,10 @@ window.TRUFIT_CLOUD = {
         input.dispatchEvent(new Event('input', { bubbles: true }));
       });
     });
+
+    const script = document.createElement('script');
+    script.src = 'food-builder.js';
+    script.defer = true;
+    document.body.appendChild(script);
   });
 })();
