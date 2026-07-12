@@ -1,4 +1,4 @@
-const CACHE='trufit-v10';
+const CACHE='trufit-v11';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./cloud-config.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/favicon-32.png','./icons/favicon-16.png','./icons/favicon.ico'];
 
 self.addEventListener('install',event=>{
@@ -24,7 +24,7 @@ self.addEventListener('fetch',event=>{
   }
 
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request,{cache:'no-store'})
       .then(response=>{
         const copy=response.clone();
         caches.open(CACHE).then(cache=>cache.put(event.request,copy));
