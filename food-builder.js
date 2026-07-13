@@ -1,152 +1,74 @@
 (() => {
   'use strict';
 
-  const LEGACY_KEY='trufit-custom-meals-v1';
-  const BUILTIN=[['Egg','1 large',72,6,0,5],['Chicken breast','4 oz cooked',187,35,0,4],['Ground beef','4 oz cooked',230,28,0,12],['Salmon','4 oz cooked',233,25,0,14],['White rice','1 cup cooked',205,4,45,0],['Pasta','1 cup cooked',221,8,43,1],['Oats','1/2 cup dry',150,5,27,3],['Bread','1 slice',80,3,15,1],['Flour tortilla','1 medium',140,4,24,4],['Potato','1 medium',161,4,37,0],['Black beans','1/2 cup',114,8,20,1],['Greek yogurt','1 cup',130,23,9,0],['Cheddar cheese','1 oz',114,7,0,9],['Protein powder','1 scoop',120,24,3,2],['Milk','1 cup',122,8,12,5],['Olive oil','1 tbsp',119,0,0,14],['Butter','1 tbsp',102,0,0,12],['Peanut butter','1 tbsp',94,4,4,8],['Avocado','1/2 medium',120,2,6,11],['Banana','1 medium',105,1,27,0],['Apple','1 medium',95,1,25,0],['Broccoli','1 cup cooked',55,4,11,1],['Mixed vegetables','1 cup',80,4,16,1],['Salsa','1/4 cup',20,1,4,0]].map(([name,unit,calories,protein,carbs,fat])=>({name,unit,calories,protein,carbs,fat,builtin:true}));
-  const $=(s,r=document)=>r.querySelector(s);
-  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const round=n=>Math.round((+n||0)*10)/10;
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const round=(n,p=1)=>Math.round((+n||0)*(10**p))/(10**p);
+  const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  const uid=()=>crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const tuple=([name,serving,calories,protein,carbs,fat,group='Common'])=>({id:`base-${slug(name)}-${slug(serving)}`,name,serving,calories,protein,carbs,fat,group,source:'TruFit'});
+  const BUILTIN=[
+    ['Egg','1 large',72,6.3,.4,4.8,'Protein'],['Egg whites','1/2 cup',63,13,1,0,'Protein'],['Chicken breast','4 oz cooked',187,35,0,4,'Protein'],['Chicken thigh','4 oz cooked',232,28,0,13,'Protein'],['Ground turkey 93%','4 oz cooked',200,28,0,9,'Protein'],['Turkey breast','4 oz cooked',153,32,0,2,'Protein'],['Ground beef 90%','4 oz cooked',230,28,0,12,'Protein'],['Sirloin steak','4 oz cooked',240,31,0,12,'Protein'],['Pork tenderloin','4 oz cooked',170,30,0,5,'Protein'],['Salmon','4 oz cooked',233,25,0,14,'Protein'],['Tuna in water','1 can drained',130,29,0,1,'Protein'],['Shrimp','4 oz cooked',112,24,1,1,'Protein'],['Tofu firm','4 oz',100,11,3,6,'Protein'],['Tempeh','4 oz',218,23,9,12,'Protein'],
+    ['White rice','1 cup cooked',205,4,45,.4,'Grains'],['Brown rice','1 cup cooked',216,5,45,2,'Grains'],['Jasmine rice','1 cup cooked',205,4,45,0,'Grains'],['Quinoa','1 cup cooked',222,8,39,4,'Grains'],['Pasta','1 cup cooked',221,8,43,1,'Grains'],['Whole wheat pasta','1 cup cooked',174,7,37,1,'Grains'],['Oats','1/2 cup dry',150,5,27,3,'Grains'],['Bread','1 slice',80,3,15,1,'Grains'],['Whole wheat bread','1 slice',90,4,15,1,'Grains'],['Bagel','1 medium',277,11,55,2,'Grains'],['Flour tortilla','1 medium',140,4,24,4,'Grains'],['Corn tortilla','2 small',104,3,22,1,'Grains'],['English muffin','1 muffin',134,4,26,1,'Grains'],['Granola','1/2 cup',240,6,35,9,'Grains'],
+    ['Potato','1 medium',161,4,37,.2,'Produce'],['Sweet potato','1 medium',112,2,26,.1,'Produce'],['Black beans','1/2 cup',114,8,20,.5,'Produce'],['Chickpeas','1/2 cup',135,7,22,2,'Produce'],['Lentils','1/2 cup cooked',115,9,20,.4,'Produce'],['Broccoli','1 cup cooked',55,4,11,.6,'Produce'],['Green beans','1 cup cooked',44,2,10,.4,'Produce'],['Mixed vegetables','1 cup',80,4,16,1,'Produce'],['Spinach','2 cups raw',14,2,2,.2,'Produce'],['Romaine lettuce','2 cups',16,1,3,.3,'Produce'],['Bell pepper','1 medium',31,1,7,.3,'Produce'],['Onion','1/2 medium',22,.6,5,.1,'Produce'],['Tomato','1 medium',22,1,5,.2,'Produce'],['Carrots','1 cup',52,1,12,.3,'Produce'],['Mushrooms','1 cup cooked',44,6,8,.7,'Produce'],['Salsa','1/4 cup',20,1,4,0,'Produce'],
+    ['Banana','1 medium',105,1.3,27,.4,'Fruit'],['Apple','1 medium',95,.5,25,.3,'Fruit'],['Orange','1 medium',62,1.2,15,.2,'Fruit'],['Blueberries','1 cup',84,1,21,.5,'Fruit'],['Strawberries','1 cup',49,1,12,.5,'Fruit'],['Grapes','1 cup',104,1,27,.2,'Fruit'],['Pineapple','1 cup',82,.9,22,.2,'Fruit'],['Mango','1 cup',99,1.4,25,.6,'Fruit'],
+    ['Greek yogurt nonfat','1 cup',130,23,9,0,'Dairy'],['Greek yogurt 2%','1 cup',150,20,9,4,'Dairy'],['Cottage cheese 2%','1 cup',180,24,10,5,'Dairy'],['Cheddar cheese','1 oz',114,7,.4,9,'Dairy'],['Mozzarella','1 oz',85,6,1,6,'Dairy'],['Milk 2%','1 cup',122,8,12,5,'Dairy'],['Almond milk unsweetened','1 cup',30,1,1,2.5,'Dairy'],['Oat milk','1 cup',120,3,16,5,'Dairy'],
+    ['Olive oil','1 tbsp',119,0,0,13.5,'Fats'],['Butter','1 tbsp',102,.1,0,11.5,'Fats'],['Peanut butter','1 tbsp',94,4,3.5,8,'Fats'],['Almond butter','1 tbsp',98,3.4,3.4,9,'Fats'],['Avocado','1/2 medium',120,1.5,6,11,'Fats'],['Almonds','1 oz',164,6,6,14,'Fats'],['Walnuts','1 oz',185,4,4,18.5,'Fats'],['Mayonnaise','1 tbsp',94,.1,.1,10,'Fats'],
+    ['Protein powder','1 scoop',120,24,3,2,'Convenience'],['Protein bar','1 bar',210,20,23,7,'Convenience'],['Rotisserie chicken','4 oz meat',190,29,0,8,'Convenience'],['Deli turkey','4 oz',120,22,4,2,'Convenience'],['Frozen mixed berries','1 cup',70,1,17,.5,'Convenience'],['Coffee creamer','2 tbsp',70,0,10,3,'Convenience'],['Honey','1 tbsp',64,0,17,0,'Convenience'],['Maple syrup','1 tbsp',52,0,13,0,'Convenience'],['Hummus','2 tbsp',70,2,4,5,'Convenience'],['Guacamole','2 tbsp',50,1,3,4,'Convenience']
+  ].map(tuple);
 
-  let draft=[];
-  let recipes=[];
-  let customIngredients=[];
-  let client=null;
-  let user=null;
-  let editingId=null;
+  let library={recipes:[],customFoods:[],recents:[],draft:null,quickTray:[],remoteCache:{}};
+  let quickResults=[],recipeResults=[],cloudMigrated=false;
 
-  const allIngredients=()=>[...customIngredients,...BUILTIN];
-  const total=()=>draft.reduce((t,x)=>({calories:t.calories+x.calories*x.qty,protein:t.protein+x.protein*x.qty,carbs:t.carbs+x.carbs*x.qty,fat:t.fat+x.fat*x.qty}),{calories:0,protein:0,carbs:0,fat:0});
-  const status=message=>{const el=$('#mealCloudStatus');if(el)el.textContent=message};
-
-  async function getClient(){
-    if(client)return client;
-    const cfg=window.TRUFIT_CLOUD;
-    if(!cfg?.url||!cfg?.publishableKey)throw new Error('Cloud sync is not configured.');
-    if(!window.supabase?.createClient){
-      await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=resolve;s.onerror=()=>reject(new Error('Could not load cloud library.'));document.head.appendChild(s)});
-    }
-    client=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-    const {data}=await client.auth.getSession();
-    user=data.session?.user||null;
-    client.auth.onAuthStateChange((_event,session)=>{user=session?.user||null;if(user)refreshCloud();else{recipes=[];customIngredients=[];renderSaved();renderSearch($('#ingredientSearch')?.value||'');status('Sign in to sync recipes')}});
-    return client;
+  const api=()=>window.TruFitFoodAPI;
+  const blankDraft=()=>({id:null,name:'',meal:'Dinner',servings:1,ingredients:[]});
+  const normalizeLibrary=value=>({recipes:Array.isArray(value?.recipes)?value.recipes:[],customFoods:Array.isArray(value?.customFoods)?value.customFoods:[],recents:Array.isArray(value?.recents)?value.recents:[],draft:value?.draft||blankDraft(),quickTray:Array.isArray(value?.quickTray)?value.quickTray:[],remoteCache:value?.remoteCache||{}});
+  const allFoods=()=>[...library.customFoods,...BUILTIN];
+  const foodById=id=>allFoods().find(x=>x.id===id)||Object.values(library.remoteCache).flatMap(x=>x.items||[]).find(x=>x.id===id);
+  const scale=(food,qty)=>({calories:round(food.calories*qty),protein:round(food.protein*qty),carbs:round(food.carbs*qty),fat:round(food.fat*qty)});
+  const sum=list=>list.reduce((t,row)=>{const n=scale(row.food,row.qty);return{calories:t.calories+n.calories,protein:t.protein+n.protein,carbs:t.carbs+n.carbs,fat:t.fat+n.fat}},{calories:0,protein:0,carbs:0,fat:0});
+  function load(){library=normalizeLibrary(api()?.library());migrateLegacy();renderAll()}
+  function persist(immediate=false){api()?.saveLibrary(library,immediate)}
+  function migrateLegacy(){
+    const keys=['trufit-custom-meals-v1','trufit-recipes-v3'];let changed=false;
+    keys.forEach(key=>{try{const old=JSON.parse(localStorage.getItem(key)||'[]');old.forEach(m=>{if(!library.recipes.some(r=>r.name?.toLowerCase()===m.name?.toLowerCase())){library.recipes.push({...m,id:m.id||uid(),ingredients:m.ingredients||[],local:true});changed=true}});if(old.length)localStorage.removeItem(key)}catch{}});
+    if(changed)persist(true)
   }
-
-  async function refreshCloud(){
-    try{
-      await getClient();
-      if(!user){status('Sign in to sync recipes');renderSaved();return}
-      status('Syncing recipes…');
-      const [recipeResult,ingredientResult]=await Promise.all([
-        client.from('trufit_recipes').select('*').order('updated_at',{ascending:false}),
-        client.from('trufit_ingredients').select('*').order('name')
-      ]);
-      if(recipeResult.error)throw recipeResult.error;
-      if(ingredientResult.error)throw ingredientResult.error;
-      recipes=(recipeResult.data||[]).map(row=>({...row,ingredients:Array.isArray(row.ingredients)?row.ingredients:[]}));
-      customIngredients=(ingredientResult.data||[]).map(row=>({...row,builtin:false}));
-      await migrateLegacy();
-      renderSaved();
-      renderSearch($('#ingredientSearch')?.value||'');
-      status(`Cloud synced · ${recipes.length} saved meal${recipes.length===1?'':'s'}`);
-    }catch(err){
-      console.warn(err);
-      status(err.message?.includes('relation')?'Run the latest Supabase schema to enable cloud recipes.':'Recipe sync unavailable');
-      renderSaved();
-    }
-  }
-
-  async function migrateLegacy(){
-    if(!user)return;
-    let legacy=[];
-    try{legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||'[]')}catch{}
-    if(!legacy.length)return;
-    const rows=legacy.map(m=>({user_id:user.id,name:m.name||'Custom meal',meal:m.meal||'Dinner',servings:+m.servings||1,calories:+m.calories||0,protein:+m.protein||0,carbs:+m.carbs||0,fat:+m.fat||0,ingredients:m.ingredients||[],updated_at:new Date().toISOString()}));
-    const {error}=await client.from('trufit_recipes').upsert(rows,{onConflict:'user_id,name'});
-    if(!error){localStorage.removeItem(LEGACY_KEY);const {data}=await client.from('trufit_recipes').select('*').order('updated_at',{ascending:false});recipes=data||[]}
-  }
-
-  function render(){
-    const list=$('#mealIngredientList');if(!list)return;
-    list.innerHTML=draft.map((x,i)=>`<div class="meal-ingredient-row"><div><strong>${esc(x.name)}</strong><small>${esc(x.unit)} · ${round(x.calories*x.qty)} kcal</small></div><input data-q="${i}" type="number" min=".1" step=".1" value="${x.qty}"><button data-r="${i}" type="button">×</button></div>`).join('')||'<p class="builder-empty">Add ingredients to calculate the meal.</p>';
-    const servings=Math.max(1,+$('#mealServings').value||1),t=total();
-    $('#mealTotalCalories').textContent=Math.round(t.calories/servings);
-    $('#mealTotalProtein').textContent=round(t.protein/servings);
-    $('#mealTotalCarbs').textContent=round(t.carbs/servings);
-    $('#mealTotalFat').textContent=round(t.fat/servings);
-  }
-
-  function renderSearch(q=''){
-    const el=$('#ingredientResults');if(!el)return;
-    const db=allIngredients(),needle=q.toLowerCase();
-    el.innerHTML=db.filter(x=>x.name.toLowerCase().includes(needle)).slice(0,16).map((x,i)=>{const index=db.indexOf(x);return`<button type="button" data-add="${index}"><span><strong>${esc(x.name)}</strong><small>${esc(x.unit)}${x.builtin?'':' · saved'}</small></span><span>${round(x.calories)} kcal · ${round(x.protein)}g P</span></button>`}).join('')||'<p class="builder-empty">No matching ingredients.</p>';
-  }
-
-  function renderSaved(){
-    const el=$('#savedMealList');if(!el)return;
-    if(!user){el.innerHTML='<p class="builder-empty">Sign in under Settings to access cloud-synced meals.</p>';return}
-    el.innerHTML=recipes.map(m=>`<div class="saved-meal-card"><div><strong>${esc(m.name)}</strong><small>${round(m.calories)} kcal · ${round(m.protein)}g P · ${round(m.carbs)}g C · ${round(m.fat)}g F</small></div><div><button data-edit="${m.id}" type="button">Edit</button><button data-log="${m.id}" type="button">Log</button><button data-del="${m.id}" type="button">×</button></div></div>`).join('')||'<p class="builder-empty">No saved cloud meals yet.</p>';
-  }
-
-  function currentMeal(){
-    const servings=Math.max(1,+$('#mealServings').value||1),t=total();
-    return{name:$('#mealBuilderName').value.trim()||'Custom meal',meal:$('#mealBuilderType').value,servings,calories:round(t.calories/servings),protein:round(t.protein/servings),carbs:round(t.carbs/servings),fat:round(t.fat/servings),ingredients:draft.map(x=>({...x}))};
-  }
-
-  function log(m){const f=$('#customFoodForm');if(!f)return;f.elements.foodName.value=m.name;f.elements.calories.value=m.calories;f.elements.protein.value=m.protein;f.elements.carbs.value=m.carbs;f.elements.fat.value=m.fat;f.elements.meal.value=m.meal;f.requestSubmit()}
-
-  async function saveMeal(andLog){
-    if(!draft.length)return alert('Add at least one ingredient.');
-    try{
-      await getClient();
-      if(!user)return alert('Sign in under Settings before saving a meal.');
-      const m=currentMeal(),row={user_id:user.id,...m,updated_at:new Date().toISOString()};
-      status('Saving meal…');
-      let result;
-      if(editingId)result=await client.from('trufit_recipes').update(row).eq('id',editingId).select().single();
-      else result=await client.from('trufit_recipes').upsert(row,{onConflict:'user_id,name'}).select().single();
-      if(result.error)throw result.error;
-      editingId=result.data.id;
-      await refreshCloud();
-      status('Meal saved to cloud');
-      if(andLog)log(result.data);
-    }catch(err){alert(err.message||'Could not save the meal.')}
-  }
-
-  async function addCustomIngredient(){
-    const name=$('#ciName').value.trim();if(!name)return;
-    const item={name,unit:$('#ciUnit').value.trim()||'1 serving',calories:+$('#ciCal').value||0,protein:+$('#ciP').value||0,carbs:+$('#ciC').value||0,fat:+$('#ciF').value||0};
-    draft.push({...item,qty:1});render();
-    try{
-      await getClient();
-      if(user){const {error}=await client.from('trufit_ingredients').upsert({user_id:user.id,...item,updated_at:new Date().toISOString()},{onConflict:'user_id,name'});if(error)throw error;await refreshCloud()}
-    }catch(err){console.warn('Custom ingredient was added to this recipe but not saved to cloud.',err)}
-  }
-
-  function clearBuilder(){editingId=null;draft=[];$('#mealBuilderName').value='';$('#mealServings').value=1;render()}
-
+  function rankedFoods(query){const q=query.trim().toLowerCase(),tokens=q.split(/\s+/).filter(Boolean);let list=allFoods();if(!q){const ids=library.recents.slice(0,8).map(x=>x.id);const recent=ids.map(foodById).filter(Boolean);return[...recent,...list.filter(x=>!ids.includes(x.id)).slice(0,10)]}return list.filter(f=>tokens.every(t=>`${f.name} ${f.serving} ${f.group||''}`.toLowerCase().includes(t))).sort((a,b)=>{const an=a.name.toLowerCase(),bn=b.name.toLowerCase();return Number(bn.startsWith(q))-Number(an.startsWith(q))||an.length-bn.length}).slice(0,18)}
+  function resultMarkup(food,index,destination){return`<button type="button" class="ingredient-result" data-result="${destination}:${index}"><span><strong>${esc(food.name)}</strong><small>${esc(food.serving)} · ${esc(food.source||food.group||'Food')}</small></span><span><b>${round(food.calories)} kcal</b><small>P ${round(food.protein)} · C ${round(food.carbs)} · F ${round(food.fat)}</small></span><i>+</i></button>`}
+  function renderQuickSearch(query=''){quickResults=rankedFoods(query);$('#foodResults').innerHTML=quickResults.map((f,i)=>resultMarkup(f,i,'quick')).join('')||'<p class="builder-empty">No local match. Tap USDA to search the food database.</p>';$('#foodSearchHint').textContent=query?'Local results · tap USDA for more':'Recent and common foods'}
+  function renderRecipeSearch(query=''){recipeResults=rankedFoods(query);$('#ingredientResults').innerHTML=recipeResults.map((f,i)=>resultMarkup(f,i,'recipe')).join('')||'<p class="builder-empty">No local match. Tap USDA to search more ingredients.</p>'}
+  function renderQuickTray(){const tray=library.quickTray;$('#quickLogTray').classList.toggle('hidden',!tray.length);$('#quickTrayList').innerHTML=tray.map((row,i)=>{const n=scale(row.food,row.qty);return`<div class="tray-row"><div><strong>${esc(row.food.name)}</strong><small>${esc(row.food.serving)} · ${n.calories} kcal</small></div><div class="qty-stepper"><button data-tray-minus="${i}" type="button">−</button><input data-tray-qty="${i}" type="number" min=".1" step=".25" value="${row.qty}" inputmode="decimal"><button data-tray-plus="${i}" type="button">+</button></div><button class="tray-remove" data-tray-remove="${i}" type="button">×</button></div>`}).join('');const t=sum(tray);$('#logQuickTray').textContent=tray.length?`Log ${tray.length} item${tray.length===1?'':'s'} · ${Math.round(t.calories)} kcal`:'Log selected foods'}
+  function recipeTotals(){return sum(library.draft.ingredients||[])}
+  function renderRecipe(){const d=library.draft=library.draft||blankDraft();$('#mealBuilderName').value=d.name||'';$('#mealBuilderType').value=d.meal||'Dinner';$('#mealServings').value=d.servings||1;$('#recipeIngredientCount').textContent=`${d.ingredients.length} item${d.ingredients.length===1?'':'s'}`;$('#mealIngredientList').innerHTML=d.ingredients.map((row,i)=>{const n=scale(row.food,row.qty);return`<div class="meal-ingredient-row"><div><strong>${esc(row.food.name)}</strong><small>${esc(row.food.serving)} · ${n.calories} kcal</small></div><div class="qty-stepper"><button data-recipe-minus="${i}" type="button">−</button><input data-recipe-qty="${i}" type="number" min=".1" step=".25" value="${row.qty}" inputmode="decimal"><button data-recipe-plus="${i}" type="button">+</button></div><button class="tray-remove" data-recipe-remove="${i}" type="button">×</button></div>`}).join('')||'<p class="builder-empty">Search above and tap ingredients to add them. Your draft will stay here if you close the app.</p>';const t=recipeTotals(),servings=Math.max(1,+d.servings||1);$('#mealTotalCalories').textContent=Math.round(t.calories/servings);$('#mealTotalProtein').textContent=round(t.protein/servings);$('#mealTotalCarbs').textContent=round(t.carbs/servings);$('#mealTotalFat').textContent=round(t.fat/servings);$('#recipeDraftStatus').textContent=d.ingredients.length?'Draft saved on this device':'Draft saves automatically on this device'}
+  function renderSaved(){const el=$('#savedMealList');el.innerHTML=library.recipes.map((r,i)=>`<article class="saved-meal-card"><div><span class="recipe-badge">${esc(r.meal||'Meal')}</span><strong>${esc(r.name)}</strong><small>${round(r.calories)} kcal · ${round(r.protein)}g protein · ${r.ingredients?.length||0} ingredients</small></div><div><button data-recipe-log="${i}" type="button">Log</button><button data-recipe-edit="${i}" type="button">Edit</button><button data-recipe-delete="${i}" type="button" aria-label="Delete recipe">×</button></div></article>`).join('')||'<div class="empty-library"><strong>Your repeat meals live here</strong><p>Build a recipe once, then log it in one tap—even while signed out.</p></div>'}
+  function renderAll(){renderQuickSearch($('#foodSearch')?.value||'');renderQuickTray();renderRecipeSearch($('#ingredientSearch')?.value||'');renderRecipe();renderSaved()}
+  function switchView(view){$$('[data-food-view]').forEach(b=>b.classList.toggle('active',b.dataset.foodView===view));$$('[data-food-panel]').forEach(p=>p.classList.toggle('active',p.dataset.foodPanel===view));if(view==='search')setTimeout(()=>$('#foodSearch').focus(),50);if(view==='recipe')renderRecipe();if(view==='meals')renderSaved()}
+  function addTo(destination,food){if(destination==='quick')library.quickTray.push({food:{...food},qty:1});else library.draft.ingredients.push({food:{...food},qty:1});persist();renderQuickTray();renderRecipe()}
+  function updateQty(list,index,value){list[index].qty=Math.max(.1,round(value,2));persist();renderQuickTray();renderRecipe()}
+  function rememberFoods(rows){rows.forEach(row=>{const current=library.recents.find(x=>x.id===row.food.id);if(current)current.count=(current.count||0)+1;else library.recents.unshift({id:row.food.id,count:1});});library.recents.sort((a,b)=>(b.count||0)-(a.count||0));library.recents=library.recents.slice(0,20)}
+  function logRows(rows,meal){if(!rows.length)return;const foods=rows.map(row=>({...row.food,...scale(row.food,row.qty),serving:`${round(row.qty,2)} × ${row.food.serving}`,meal}));rememberFoods(rows);api()?.logFoods(foods);persist(true);$('#foodSheet [data-close-sheet]')?.click()}
+  async function searchUSDA(destination){const input=destination==='quick'?$('#foodSearch'):$('#ingredientSearch'),button=destination==='quick'?$('#onlineFoodSearchBtn'):$('#onlineIngredientSearchBtn'),query=input.value.trim(),hint=destination==='quick'?$('#foodSearchHint'):$('#recipeDraftStatus');if(query.length<2){hint.textContent='Type at least 2 letters first';return}const key=query.toLowerCase(),cached=library.remoteCache[key];if(cached&&Date.now()-cached.time<2592e6){if(destination==='quick'){quickResults=cached.items;$('#foodResults').innerHTML=quickResults.map((f,i)=>resultMarkup(f,i,'quick')).join('')}else{recipeResults=cached.items;$('#ingredientResults').innerHTML=recipeResults.map((f,i)=>resultMarkup(f,i,'recipe')).join('')}hint.textContent='USDA FoodData Central results · values shown per 100 g';return}button.disabled=true;button.textContent='…';hint.textContent='Searching USDA FoodData Central…';try{const url=`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=${encodeURIComponent(query)}&pageSize=14`;const response=await fetch(url);if(!response.ok)throw new Error(response.status===429?'USDA search limit reached. Try again later.':'USDA search unavailable.');const data=await response.json(),items=(data.foods||[]).map(fromUSDA).filter(x=>x.calories||x.protein||x.carbs||x.fat);library.remoteCache[key]={time:Date.now(),items};const cacheKeys=Object.keys(library.remoteCache);if(cacheKeys.length>20)delete library.remoteCache[cacheKeys[0]];persist();if(destination==='quick'){quickResults=items;$('#foodResults').innerHTML=items.map((f,i)=>resultMarkup(f,i,'quick')).join('')}else{recipeResults=items;$('#ingredientResults').innerHTML=items.map((f,i)=>resultMarkup(f,i,'recipe')).join('')}hint.textContent=items.length?'USDA FoodData Central · per 100 g':'No USDA results found.'}catch(err){hint.textContent=err.message||'Online search unavailable. Your local foods still work.'}finally{button.disabled=false;button.textContent='USDA'}}
+  function fromUSDA(food){const nutrients=food.foodNutrients||[],find=(names,unit)=>+nutrients.find(n=>names.includes(n.nutrientName)&&(!unit||String(n.unitName).toUpperCase()===unit))?.value||0;return{id:`usda-${food.fdcId}`,name:(food.description||'USDA food').replace(/, UPC:.*/i,''),serving:'100 g',calories:round(find(['Energy'],'KCAL')||find(['Energy'])/4.184),protein:round(find(['Protein'])),carbs:round(find(['Carbohydrate, by difference','Carbohydrate, by summation'])),fat:round(find(['Total lipid (fat)'])),source:'USDA FDC',fdcId:food.fdcId}}
+  function saveCustom(e){e.preventDefault();const d=Object.fromEntries(new FormData(e.target)),food={id:`custom-${uid()}`,name:d.foodName.trim(),serving:d.serving.trim(),calories:+d.calories||0,protein:+d.protein||0,carbs:+d.carbs||0,fat:+d.fat||0,group:'My foods',source:'My food'};library.customFoods.unshift(food);library.quickTray.push({food,qty:1});persist(true);e.target.reset();e.target.classList.add('hidden');renderAll()}
+  function currentRecipe(){const d=library.draft,t=recipeTotals(),servings=Math.max(1,+d.servings||1);return{id:d.id||uid(),name:d.name.trim(),meal:d.meal||'Dinner',servings,calories:round(t.calories/servings),protein:round(t.protein/servings),carbs:round(t.carbs/servings),fat:round(t.fat/servings),ingredients:d.ingredients.map(x=>({food:{...x.food},qty:x.qty})),updatedAt:new Date().toISOString()}}
+  function saveRecipe(andLog){const d=library.draft;if(!d.name.trim()){alert('Give the recipe a name.');$('#mealBuilderName').focus();return}if(!d.ingredients.length){alert('Add at least one ingredient.');$('#ingredientSearch').focus();return}const recipe=currentRecipe(),index=library.recipes.findIndex(r=>r.id===recipe.id);if(index>=0)library.recipes[index]=recipe;else library.recipes.unshift(recipe);library.draft=blankDraft();persist(true);renderAll();switchView('meals');if(andLog)logRows([{food:recipe,qty:1}],recipe.meal);migrateCloudRows();}
+  async function migrateCloudRows(){if(cloudMigrated)return;const client=window.TruFitCloudAPI?.client(),user=window.TruFitCloudAPI?.user();if(!client||!user)return;cloudMigrated=true;try{const [rr,ir]=await Promise.all([client.from('trufit_recipes').select('*'),client.from('trufit_ingredients').select('*')]);let changed=false;(rr.data||[]).forEach(r=>{if(!library.recipes.some(x=>x.name.toLowerCase()===r.name.toLowerCase())){library.recipes.push({...r,id:r.id||uid(),ingredients:(r.ingredients||[]).map(x=>x.food?x:{food:{...x,id:x.id||`cloud-${slug(x.name)}`},qty:x.qty||1})});changed=true}});(ir.data||[]).forEach(x=>{if(!library.customFoods.some(f=>f.name.toLowerCase()===x.name.toLowerCase())){library.customFoods.push({...x,id:x.id||`cloud-${slug(x.name)}`,serving:x.unit||'1 serving',source:'My food'});changed=true}});if(changed){persist(true);renderAll()}}catch(err){console.warn('Legacy recipe migration skipped',err)}}
   function install(){
-    const anchor=$('#customFoodBtn');if(!anchor||$('#mealBuilderPanel'))return;
-    anchor.insertAdjacentHTML('beforebegin',`<button class="primary-button full" id="mealBuilderToggle" type="button">Build a meal from ingredients</button><section class="meal-builder hidden" id="mealBuilderPanel"><div class="builder-head"><div><p class="eyebrow">CLOUD MEAL BUILDER</p><h3>Build and estimate a meal</h3><small id="mealCloudStatus">Connecting to cloud…</small></div><button id="clearMealBuilder" type="button">Clear</button></div><div class="field-row"><label>Meal name<input id="mealBuilderName" placeholder="Chicken rice bowl"></label><label>Meal<select id="mealBuilderType"><option>Breakfast</option><option>Lunch</option><option selected>Dinner</option><option>Snacks</option></select></label></div><label>Ingredient search<input id="ingredientSearch" placeholder="Chicken, rice, oil..."></label><div id="ingredientResults" class="ingredient-results"></div><details><summary>Add and save a custom ingredient</summary><div class="field-row"><label>Name<input id="ciName"></label><label>Serving<input id="ciUnit" placeholder="1 cup"></label></div><div class="field-row four"><label>Calories<input id="ciCal" type="number"></label><label>Protein<input id="ciP" type="number"></label><label>Carbs<input id="ciC" type="number"></label><label>Fat<input id="ciF" type="number"></label></div><button class="outline-button full" id="ciAdd" type="button">Add ingredient</button></details><div id="mealIngredientList"></div><label>Recipe servings<input id="mealServings" type="number" min="1" value="1"></label><div class="meal-totals"><div><strong id="mealTotalCalories">0</strong><span>kcal</span></div><div><strong id="mealTotalProtein">0</strong><span>protein</span></div><div><strong id="mealTotalCarbs">0</strong><span>carbs</span></div><div><strong id="mealTotalFat">0</strong><span>fat</span></div></div><p class="helper-copy">Estimated values vary by brand, cooking method, and portion size.</p><div class="builder-actions"><button class="outline-button" id="saveMealBtn" type="button">Save meal</button><button class="primary-button" id="saveLogMealBtn" type="button">Save & log</button></div><div class="saved-meals"><p class="eyebrow">CLOUD-SAVED MEALS</p><div id="savedMealList"></div></div></section>`);
-    $('#mealBuilderToggle').onclick=()=>{$('#mealBuilderPanel').classList.toggle('hidden');renderSearch();renderSaved();render();refreshCloud()};
-    $('#ingredientSearch').oninput=e=>renderSearch(e.target.value);
-    $('#ingredientResults').onclick=e=>{const b=e.target.closest('[data-add]');if(b){draft.push({...allIngredients()[+b.dataset.add],qty:1});render()}};
-    $('#mealIngredientList').oninput=e=>{if(e.target.dataset.q!==undefined){draft[+e.target.dataset.q].qty=Math.max(.1,+e.target.value||1);render()}};
-    $('#mealIngredientList').onclick=e=>{if(e.target.dataset.r!==undefined){draft.splice(+e.target.dataset.r,1);render()}};
-    $('#mealServings').oninput=render;
-    $('#ciAdd').onclick=addCustomIngredient;
-    $('#saveMealBtn').onclick=()=>saveMeal(false);
-    $('#saveLogMealBtn').onclick=()=>saveMeal(true);
-    $('#clearMealBuilder').onclick=clearBuilder;
-    $('#savedMealList').onclick=async e=>{
-      const id=e.target.dataset.log||e.target.dataset.edit||e.target.dataset.del;if(!id)return;
-      const m=recipes.find(x=>x.id===id);if(!m)return;
-      if(e.target.dataset.log)log(m);
-      if(e.target.dataset.edit){editingId=m.id;draft=(m.ingredients||[]).map(x=>({...x}));$('#mealBuilderName').value=m.name;$('#mealBuilderType').value=m.meal;$('#mealServings').value=m.servings||1;render()}
-      if(e.target.dataset.del&&confirm(`Delete ${m.name}?`)){const {error}=await client.from('trufit_recipes').delete().eq('id',id);if(error)return alert(error.message);if(editingId===id)clearBuilder();await refreshCloud()}
-    };
-    getClient().then(refreshCloud).catch(err=>status(err.message));
+    if(!$('#foodSheet')||!api())return;
+    load();const hour=new Date().getHours();$('#quickMealType').value=hour<11?'Breakfast':hour<16?'Lunch':'Dinner';
+    $$('[data-food-view]').forEach(b=>b.onclick=()=>switchView(b.dataset.foodView));
+    $('#foodSearch').oninput=e=>renderQuickSearch(e.target.value);$('#foodSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchUSDA('quick')}};$('#onlineFoodSearchBtn').onclick=()=>searchUSDA('quick');
+    $('#ingredientSearch').oninput=e=>renderRecipeSearch(e.target.value);$('#ingredientSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchUSDA('recipe')}};$('#onlineIngredientSearchBtn').onclick=()=>searchUSDA('recipe');
+    $('#foodResults').onclick=e=>{const b=e.target.closest('[data-result]');if(!b)return;const [,i]=b.dataset.result.split(':');addTo('quick',quickResults[+i])};$('#ingredientResults').onclick=e=>{const b=e.target.closest('[data-result]');if(!b)return;const [,i]=b.dataset.result.split(':');addTo('recipe',recipeResults[+i])};
+    $('#quickTrayList').oninput=e=>{if(e.target.dataset.trayQty!==undefined)updateQty(library.quickTray,+e.target.dataset.trayQty,+e.target.value)};$('#quickTrayList').onclick=e=>{let i;if((i=e.target.dataset.trayMinus)!==undefined)updateQty(library.quickTray,+i,library.quickTray[+i].qty-.25);if((i=e.target.dataset.trayPlus)!==undefined)updateQty(library.quickTray,+i,library.quickTray[+i].qty+.25);if((i=e.target.dataset.trayRemove)!==undefined){library.quickTray.splice(+i,1);persist();renderQuickTray()}};
+    $('#logQuickTray').onclick=()=>{const rows=[...library.quickTray];library.quickTray=[];logRows(rows,$('#quickMealType').value)};$('#clearQuickTray').onclick=()=>{library.quickTray=[];persist();renderQuickTray()};
+    $('#customFoodBtn').onclick=()=>$('#customFoodForm').classList.remove('hidden');$('#cancelCustomFood').onclick=()=>$('#customFoodForm').classList.add('hidden');$('#customFoodForm').onsubmit=saveCustom;
+    ['mealBuilderName','mealBuilderType','mealServings'].forEach(id=>$('#'+id).oninput=e=>{const key=id==='mealBuilderName'?'name':id==='mealBuilderType'?'meal':'servings';library.draft[key]=key==='servings'?Math.max(1,+e.target.value||1):e.target.value;persist();renderRecipe()});
+    $('#mealIngredientList').oninput=e=>{if(e.target.dataset.recipeQty!==undefined)updateQty(library.draft.ingredients,+e.target.dataset.recipeQty,+e.target.value)};$('#mealIngredientList').onclick=e=>{let i;if((i=e.target.dataset.recipeMinus)!==undefined)updateQty(library.draft.ingredients,+i,library.draft.ingredients[+i].qty-.25);if((i=e.target.dataset.recipePlus)!==undefined)updateQty(library.draft.ingredients,+i,library.draft.ingredients[+i].qty+.25);if((i=e.target.dataset.recipeRemove)!==undefined){library.draft.ingredients.splice(+i,1);persist();renderRecipe()}};
+    $('#clearRecipeDraft').onclick=()=>{if(library.draft.ingredients.length&&!confirm('Clear this recipe draft?'))return;library.draft=blankDraft();persist(true);renderRecipe()};$('#saveMealBtn').onclick=()=>saveRecipe(false);$('#saveLogMealBtn').onclick=()=>saveRecipe(true);$('#createRecipeFromMeals').onclick=()=>switchView('recipe');
+    $('#savedMealList').onclick=e=>{let i;if((i=e.target.dataset.recipeLog)!==undefined){const r=library.recipes[+i];logRows([{food:r,qty:1}],r.meal)}if((i=e.target.dataset.recipeEdit)!==undefined){library.draft=JSON.parse(JSON.stringify(library.recipes[+i]));persist();renderRecipe();switchView('recipe')}if((i=e.target.dataset.recipeDelete)!==undefined){const r=library.recipes[+i];if(confirm(`Delete ${r.name}?`)){library.recipes.splice(+i,1);persist(true);renderSaved()}}};
+    $('#addFoodBtn')?.addEventListener('click',()=>{load();switchView('search')});window.addEventListener('trufit:auth',()=>{cloudMigrated=false;migrateCloudRows()});document.addEventListener('visibilitychange',()=>{if(document.hidden)persist(true)});migrateCloudRows();
   }
-
   document.readyState==='loading'?document.addEventListener('DOMContentLoaded',install):install();
 })();

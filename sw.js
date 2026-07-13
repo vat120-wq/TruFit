@@ -1,4 +1,4 @@
-const CACHE='trufit-v14';
+const CACHE='trufit-v15';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./cloud-config.js','./food-builder.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/favicon-32.png','./icons/favicon-16.png','./icons/favicon.ico'];
 
 self.addEventListener('install',event=>{

@@ -236,17 +236,36 @@
   </div>
 
   <div class="sheet-overlay" id="foodSheet" aria-hidden="true">
-    <section class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="foodSheetTitle">
+    <section class="bottom-sheet food-hub-sheet" role="dialog" aria-modal="true" aria-labelledby="foodSheetTitle">
       <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">NOURISH</p><h2 id="foodSheetTitle">Add food</h2></div><button class="icon-button" data-close-sheet><svg><use href="#i-close"/></svg></button></div>
-      <div class="search-field"><svg><use href="#i-food"/></svg><input id="foodSearch" placeholder="Search common foods" autocomplete="off"></div>
-      <div class="food-results" id="foodResults"></div>
-      <button class="link-button centered" id="customFoodBtn">+ Add a custom food</button>
-      <form class="custom-food-form hidden" id="customFoodForm">
-        <label>Food name<input required name="foodName" placeholder="e.g. Turkey sandwich"></label>
-        <div class="field-row four"><label>Calories<input required type="number" name="calories" min="0" inputmode="numeric"></label><label>Protein<input required type="number" name="protein" min="0" inputmode="numeric"></label><label>Carbs<input required type="number" name="carbs" min="0" inputmode="numeric"></label><label>Fat<input required type="number" name="fat" min="0" inputmode="numeric"></label></div>
-        <label>Meal<select name="meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snacks</option></select></label>
-        <button class="primary-button full" type="submit">Add to today</button>
-      </form>
+      <div class="food-hub-tabs"><button class="active" data-food-view="search">Search</button><button data-food-view="meals">My meals</button><button data-food-view="recipe">Build recipe</button></div>
+      <section class="food-hub-panel active" id="foodSearchPanel" data-food-panel="search">
+        <label class="food-meal-picker">Add to <select id="quickMealType"><option>Breakfast</option><option>Lunch</option><option selected>Dinner</option><option>Snacks</option></select></label>
+        <div class="search-field"><svg><use href="#i-food"/></svg><input id="foodSearch" placeholder="Search foods or ingredients" autocomplete="off"><button id="onlineFoodSearchBtn" type="button">USDA</button></div>
+        <p class="food-search-hint" id="foodSearchHint">Searches common foods, your foods, and saved ingredients instantly.</p>
+        <div class="food-results" id="foodResults"></div>
+        <div class="quick-log-tray hidden" id="quickLogTray"><div class="tray-head"><strong>Your plate</strong><button id="clearQuickTray" type="button">Clear</button></div><div id="quickTrayList"></div><button class="primary-button full" id="logQuickTray" type="button">Log selected foods</button></div>
+        <button class="outline-button full" id="customFoodBtn" type="button">+ Create food from a label</button>
+        <form class="custom-food-form hidden" id="customFoodForm">
+          <div class="builder-head"><div><p class="eyebrow">CUSTOM FOOD</p><h3>Save a food you use</h3></div><button id="cancelCustomFood" type="button">Cancel</button></div>
+          <label>Food or brand name<input required name="foodName" placeholder="e.g. Trader Joe’s granola"></label>
+          <label>Serving description<input required name="serving" placeholder="e.g. 1/2 cup (55 g)"></label>
+          <div class="field-row four"><label>Calories<input required type="number" name="calories" min="0" inputmode="decimal"></label><label>Protein<input required type="number" name="protein" min="0" inputmode="decimal"></label><label>Carbs<input required type="number" name="carbs" min="0" inputmode="decimal"></label><label>Fat<input required type="number" name="fat" min="0" inputmode="decimal"></label></div>
+          <button class="primary-button full" type="submit">Save and add</button>
+        </form>
+      </section>
+      <section class="food-hub-panel" id="foodMealsPanel" data-food-panel="meals"><div class="saved-meal-list" id="savedMealList"></div><button class="primary-button full" id="createRecipeFromMeals" type="button">+ Build a new recipe</button></section>
+      <section class="food-hub-panel" id="foodRecipePanel" data-food-panel="recipe">
+        <div class="recipe-draft-note"><span class="console-dot"></span><span id="recipeDraftStatus">Draft saves automatically on this device</span><button id="clearRecipeDraft" type="button">Start over</button></div>
+        <div class="field-row"><label>Recipe name<input id="mealBuilderName" placeholder="Chicken rice bowls"></label><label>Makes<input id="mealServings" type="number" min="1" step="1" value="1" inputmode="numeric"></label></div>
+        <label>Log under<select id="mealBuilderType"><option>Breakfast</option><option>Lunch</option><option selected>Dinner</option><option>Snacks</option></select></label>
+        <div class="search-field"><svg><use href="#i-food"/></svg><input id="ingredientSearch" placeholder="Find an ingredient" autocomplete="off"><button id="onlineIngredientSearchBtn" type="button">USDA</button></div>
+        <div class="ingredient-results" id="ingredientResults"></div>
+        <div class="recipe-ingredients"><div class="tray-head"><strong>Ingredients</strong><span id="recipeIngredientCount">0 items</span></div><div id="mealIngredientList"></div></div>
+        <div class="meal-totals"><div><strong id="mealTotalCalories">0</strong><span>kcal</span></div><div><strong id="mealTotalProtein">0</strong><span>protein</span></div><div><strong id="mealTotalCarbs">0</strong><span>carbs</span></div><div><strong id="mealTotalFat">0</strong><span>fat</span></div></div>
+        <p class="helper-copy">Per serving estimate. Adjust ingredient amounts or the number of servings anytime.</p>
+        <div class="builder-actions"><button class="outline-button" id="saveMealBtn" type="button">Save recipe</button><button class="primary-button" id="saveLogMealBtn" type="button">Save & log</button></div>
+      </section>
     </section>
   </div>
 
@@ -284,22 +303,20 @@
       </article>
       <button class="danger-link cloud-only hidden" id="cloudSignOutBtn" type="button">Disconnect cloud account</button>
       <button class="danger-link" id="resetDataBtn">Reset all data</button>
-      <p class="fine-print">TruFit stores your encrypted health data only in this browser. It is educational and does not diagnose or treat medical conditions.</p>
+      <p class="fine-print">TruFit encrypts health data on your device. Optional sync uploads only the encrypted payload. It is educational and does not diagnose or treat medical conditions.</p>
     </section>
   </div>
 
   <div class="sheet-overlay" id="cloudSheet" aria-hidden="true">
     <section class="bottom-sheet compact-sheet cloud-sheet" role="dialog" aria-modal="true" aria-labelledby="cloudTitle">
-      <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">ZERO-KNOWLEDGE SYNC</p><h2 id="cloudTitle">Connect your email</h2></div><button class="icon-button" data-close-sheet><svg><use href="#i-close"/></svg></button></div>
-      <p class="helper-copy">Email identifies your private cloud record. Your PIN encrypts and decrypts it; TruFit uploads only ciphertext.</p>
-      <form id="cloudEmailForm">
-        <label>Email address<input required id="cloudEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></label>
-        <button class="primary-button full" type="submit">Send one-time code</button>
-      </form>
-      <form class="hidden" id="cloudCodeForm">
-        <label>Code from email<input required id="cloudCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" maxlength="8" placeholder="000000"></label>
-        <button class="primary-button full" type="submit">Verify and sync</button>
-        <button class="link-button centered" id="cloudUseDifferentEmail" type="button">Use a different email</button>
+      <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">OPTIONAL ACCOUNT</p><h2 id="cloudTitle">Sign in to sync</h2></div><button class="icon-button" data-close-sheet><svg><use href="#i-close"/></svg></button></div>
+      <p class="helper-copy" id="cloudAuthCopy">Your app works without an account. Sign in only to sync the encrypted backup and saved recipes between browsers.</p>
+      <div class="auth-mode-switch" id="cloudAuthModes"><button class="active" data-auth-mode="signin" type="button">Sign in</button><button data-auth-mode="signup" type="button">Create account</button></div>
+      <form id="cloudAuthForm">
+        <label id="cloudEmailLabel">Email address<input required id="cloudEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></label>
+        <label id="cloudPasswordLabel">Password<input required id="cloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="8+ characters"></label>
+        <button class="primary-button full" id="cloudAuthSubmit" type="submit">Sign in and sync</button>
+        <button class="link-button centered" id="cloudForgotPassword" type="button">Forgot or never created a password?</button>
       </form>
       <p class="pin-error hidden" id="cloudError" role="alert"></p>
     </section>
@@ -308,5 +325,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="cloud-config.js"></script>
   <script src="app.js"></script>
+  <script src="food-builder.js"></script>
 </body>
 </html>
